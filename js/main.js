@@ -5,7 +5,10 @@ let users = [] ;
 
 // funcion para mostrar los posts
 const printPost = async() => {
+  // esperar hasta que se cargen los usuarios
   await generateUserList() ;
+
+  // una vez cargado los usuarios, cargamos los posts 
   let listPosts = await getPosts() ;
   if(listPosts.length > 0){
     let node = ""  ;
