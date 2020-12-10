@@ -1,0 +1,31 @@
+.postItem{
+  margin-bottom: 18px;
+  padding: 18px  18px;
+  background-color: white ;
+  span {
+    display: block;
+  }
+  .username{
+    color: #007bff;
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
+  .postTitle{
+    font-size: 0.9em;
+    margin-bottom: 6px;
+  }
+  .postComments{
+    font-size: 0.7em;
+    font-style: italic;
+    text-align: right;
+
+    &:hover{
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+}
+
+body{
+  background-color: #F5F5F5;
+}
