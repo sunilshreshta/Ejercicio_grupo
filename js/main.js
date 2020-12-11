@@ -22,7 +22,7 @@ const printPost = async() => {
               <div class="postAccions"><button type="button" data-toggle="collapse" data-target="#post'+ item.id +'" class="btn postComments" data-value="'+ item.id +'"> \
                 <i class="far fa-comments"></i> Comments \
               </button></div> \
-              <div id="post'+ item.id +'" class="collapse box-postComments">'+commentLoader+'</div>' ;
+              <div id="post'+ item.id +'" class="collapse box-postComments"></div>' ;
       node += "</div></div>"  ;
     });
       $(".loader").hide() ;
@@ -124,6 +124,8 @@ $(document).on("click", ".postComments", async function(){
   $(this).toggleClass("pressed") ;
   if($(this).hasClass("pressed")){
     const postID = $(this).attr("data-value") ;
+    $("#post"+ postID).html(commentLoader) ;
+    
     const comments = await getComments(postID) ;
     printComments(comments, "post" + postID) ;
   }
