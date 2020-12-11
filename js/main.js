@@ -1,23 +1,31 @@
-const apiPost = "https://cors-anywhere.herokuapp.com/https://jsonplaceholder.typicode.com/posts/"  ;
-const apiUser = "https://cors-anywhere.herokuapp.com/https://jsonplaceholder.typicode.com/users/"  ;
+const apiPost = "https://jsonplaceholder.typicode.com/posts/"  ;
+const apiUser = "https://jsonplaceholder.typicode.com/users/"  ;
+const commentLoader = '<div class="text-center "><i class="fas fa-spinner fa-pulse"></i> Cargando comentarios</div>' ;
 let users = [] ;
 
 
 // funcion para mostrar los posts
 const printPost = async() => {
+  $(".loader").show() ;
   // esperar hasta que se cargen los usuarios
   await generateUserList() ;
 
-  // una vez cargado los usuarios, cargamos los posts 
+  // una vez cargado los usuarios, cargamos los posts
   let listPosts = await getPosts() ;
   if(listPosts.length > 0){
     let node = ""  ;
     listPosts.forEach((item) => {
       let _userName = searchUser(item.userId) ;
       node += '<div class="col-8 offset-2"><div class=" postItem">' ;
-      node += '<span class="username"><i class="fas fa-user-circle"></i> '+ _userName[0].username +'</span><span class="postTitle">'+ item.title +'</span><span class="postComments"><i class="far fa-comments"></i> Comments</span>' ;
+      node += '<span class="username"><i class="fas fa-user-circle"></i> '+ _userName[0].username +'</span> \
+              <span class="postTitle">'+ item.title +'</span> \
+              <div class="postAccions"><button type="button" data-toggle="collapse" data-target="#post'+ item.id +'" class="btn postComments" data-value="'+ item.id +'"> \
+                <i class="far fa-comments"></i> Comments \
+              </button></div> \
+              <div id="post'+ item.id +'" class="collapse box-postComments">'+commentLoader+'</div>' ;
       node += "</div></div>"  ;
     });
+      $(".loader").hide() ;
     $(".listPosts").html(node) ;
   }
 }
@@ -45,7 +53,7 @@ const generateUserList = async () => {
 
 // funcion para cargar los datos de los posts
 const  getPosts = async () => {
-  console.log("Getting parkings details...") ;
+  console.log("Getting posts details...") ;
 
   return new Promise((resolve, reject) => {
     $.ajax({
@@ -78,8 +86,50 @@ const  getUsers = async () => {
 }
 
 
+//funcion para cargar los comentarios de un post
+const getComments = async (postID) => {
+  const endpoint = `https://jsonplaceholder.typicode.com/posts/${postID}/comments` ;
+  console.log("Getting post comments ...", endpoint) ;
 
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      url: endpoint,
+      method: "GET"
+    })
+    .done((response) => {
+      resolve(response) ;
+    })
+    .fail(() => reject("Something went wrong with api!!!")) ;
+
+  }) ;
+}
+
+const printComments = (comments, parentNodeId) => {
+  if(comments.length > 0){
+    let node = '<ul class="listComments">' ;
+    comments.forEach((item) => {
+      node += '<li> \
+                  <span class="userEmail">'+ item.email +'</span> \
+                  <span class="commentName">'+ item.name +'</span> \
+                  <span class="commentBody">'+ item.body +'</span> \
+               </li>'
+    });
+
+    node += '</ul>' ;
+    $("#" + parentNodeId).html(node) ;
+  }
+}
+
+$(document).on("click", ".postComments", async function(){
+  $(this).toggleClass("pressed") ;
+  if($(this).hasClass("pressed")){
+    const postID = $(this).attr("data-value") ;
+    const comments = await getComments(postID) ;
+    printComments(comments, "post" + postID) ;
+  }
+}) ;
 // init
 $(document).ready(function(){
   printPost() ;
+
 }) ;
